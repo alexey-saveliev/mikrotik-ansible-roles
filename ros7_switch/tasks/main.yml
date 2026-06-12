@@ -244,7 +244,12 @@
         password: "{{ ros_api_password }}"
         username: "{{ ros_api_user }}"
         path: interface ethernet switch port
-      register: storm_all_device_ports
+      register: storm_all_device_ports_raw
+
+    - name: Filter ports that support storm rate
+      set_fact:
+        storm_all_device_ports:
+          result: "{{ storm_all_device_ports_raw.result | selectattr('storm-rate', 'defined') | list }}"
 
     - name: Get bridge members
       community.routeros.api_info:
